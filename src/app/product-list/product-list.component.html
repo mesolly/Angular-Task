@@ -1,0 +1,62 @@
+<h1>Product List</h1>
+
+<div class="search-container">
+    <input type="text" [(ngModel)]="searchText" class="search-input" placeholder="Search" (input)="filterProducts()">
+    <div class="search-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#999" width="24px" height="24px">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M21.707 20.293l-5.152-5.152a7.5 7.5 0 1 0-1.414 1.414l5.152 5.152a1 1 0 0 0 1.414-1.414zM3.5 10.5a7 7 0 1 1 14 0 7 7 0 0 1-14 0z"/>
+      </svg>
+    </div>
+  </div>
+  
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Price</th>
+      <th>Description</th>
+      <th>Category</th>
+      <th>Image</th>
+      <th>Rating</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of getCurrentPageItems()">
+      <td>{{ product.id }}</td>
+      <td>{{ product.title }}</td>
+      <td>{{ product.price }}</td>
+      <td>{{ product.description }}</td>
+      <td>{{ product.category }}</td>
+      <td><img [src]="product.image" alt="Product Image"></td>
+      <td>
+        <table>
+          <tr>
+            <td>Rate</td>
+            <td>Count</td>
+          </tr>
+          <tr>
+            <td>{{ product.rating.rate }}</td>
+            <td>{{ product.rating.count }}</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <div class="button-container">
+          <button class="action-button" (click)="openUpdateForm(product)">Update</button>
+          <button class="action-button delete" (click)="deleteProduct(product)">Delete</button>
+        </div>
+      </td>      
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagination">
+    <button [disabled]="currentPage === 1" (click)="currentPage = 1" [class.disabled]="currentPage === 1">First</button>
+    <button [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1" [class.disabled]="currentPage === 1">Previous</button>
+    <span>{{ currentPage }}</span>
+    <button [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1" [class.disabled]="currentPage === totalPages">Next</button>
+    <button [disabled]="currentPage === totalPages" (click)="currentPage = totalPages" [class.disabled]="currentPage === totalPages">Last</button>
+  </div>
