@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UpdateFormComponent } from '../update-form/update-form.component';
+import { AddProductComponent } from '../add-product/add-product.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductsService } from '../products.service';
 
@@ -86,6 +87,22 @@ export class ProductListComponent implements OnInit {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     return this.filteredProducts.slice(startIndex, endIndex);
+  }
+
+  insertProduct(){
+    const newID = (Math.max(...this.products.map(p => p.id)))+1;
+    const dialogRef = this.dialog.open(AddProductComponent, {
+      width: '490px',
+      height: '100vh',
+      data: newID,
+    });
+
+    dialogRef.afterClosed().subscribe(newProduct => {
+      if (newProduct) {
+        this.products.push(newProduct) ;
+        this.filterProducts();
+      }
+    });
   }
 
   get totalPages(): number {

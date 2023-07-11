@@ -1,6 +1,7 @@
 <h1>Product List</h1>
 
-<div class="search-container">
+<div class="top-div">
+  <div class="search-container">
     <input type="text" [(ngModel)]="searchText" class="search-input" placeholder="Search" (input)="filterProducts()">
     <div class="search-icon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#999" width="24px" height="24px">
@@ -9,6 +10,8 @@
       </svg>
     </div>
   </div>
+  <button class="add-product" (click)="insertProduct()">Add a product</button>
+</div>
   
 <table>
   <thead>

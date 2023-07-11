@@ -8,12 +8,14 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UpdateFormComponent } from './update-form/update-form.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { AddProductComponent } from './add-product/add-product.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProductListComponent,
-    UpdateFormComponent
+    UpdateFormComponent,
+    AddProductComponent
   ],
   imports: [
     BrowserModule,
