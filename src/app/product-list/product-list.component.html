@@ -1,18 +1,35 @@
+<div *ngIf="successStatus" class="alert alert-success" [ngClass]="{'alert-success': msgType === 'success', 'alert-failure': msgType === 'failure'}" role="alert">
+  {{sucessMsg}}
+</div>
 <h1>Product List</h1>
 
 <div class="top-div">
   <div class="search-container">
-    <input type="text" [(ngModel)]="searchText" class="search-input" placeholder="Search" (input)="filterProducts()">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      class="search-input"
+      placeholder="Search"
+      (input)="filterProducts()"
+    />
     <div class="search-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#999" width="24px" height="24px">
-        <path d="M0 0h24v24H0z" fill="none"/>
-        <path d="M21.707 20.293l-5.152-5.152a7.5 7.5 0 1 0-1.414 1.414l5.152 5.152a1 1 0 0 0 1.414-1.414zM3.5 10.5a7 7 0 1 1 14 0 7 7 0 0 1-14 0z"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="#999"
+        width="24px"
+        height="24px"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M21.707 20.293l-5.152-5.152a7.5 7.5 0 1 0-1.414 1.414l5.152 5.152a1 1 0 0 0 1.414-1.414zM3.5 10.5a7 7 0 1 1 14 0 7 7 0 0 1-14 0z"
+        />
       </svg>
     </div>
   </div>
   <button class="add-product" (click)="insertProduct()">Add a product</button>
 </div>
-  
+
 <table>
   <thead>
     <tr>
@@ -27,15 +44,48 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let product of getCurrentPageItems()">
+    <tr *ngFor="let product of getCurrentPageItems(); let i = index;">
       <td>{{ product.id }}</td>
-      <td>{{ product.title }}</td>
-      <td>{{ product.price }}</td>
-      <td>{{ product.description }}</td>
-      <td>{{ product.category }}</td>
-      <td><img [src]="product.image" alt="Product Image"></td>
       <td>
-        <table>
+        <ng-container *ngIf="!product.isEditing; else editTitle">
+          {{ product.title }}
+        </ng-container>
+        <ng-template #editTitle>
+          <input type="text" [(ngModel)]="product.title" class="edit-input" />
+        </ng-template>
+      </td>
+      <td>{{ product.price }}</td>
+      <td>
+        <ng-container *ngIf="!product.isEditing; else editDescription">
+          {{ product.description }}
+        </ng-container>
+        <ng-template #editDescription>
+          <textarea [(ngModel)]="product.description" class="edit-input area"></textarea>
+        </ng-template>
+      </td>
+      <td>
+        <ng-container *ngIf="!product.isEditing; else editCategory">
+          {{ product.category }}
+        </ng-container>
+        <ng-template #editCategory>
+          <select [(ngModel)]="product.category" class="edit-input">
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+        </ng-template>
+      </td>
+      <td>
+        <div *ngIf="!product.isEditing; else editImage">
+          <img [src]="product.image" alt="Product Image" />
+        </div>
+        <ng-template #editImage>
+          <div>
+            <img [src]="product.image" alt="Product Image" />
+            <input type="file" (change)="handleImageChange($event, product)" accept="image/*" />
+          </div>
+        </ng-template>
+      </td>
+      <td>
+        <table *ngIf="!product.isEditing; else editRating">
           <tr>
             <td>Rate</td>
             <td>Count</td>
@@ -45,21 +95,60 @@
             <td>{{ product.rating.count }}</td>
           </tr>
         </table>
-      </td>
+        <ng-template #editRating>
+          <table>
+            <tr>
+              <td>Rate</td>
+              <td>Count</td>
+            </tr>
+            <tr>
+              <td><input type="number" [(ngModel)]="product.rating.rate" class="edit-input" /></td>
+              <td><input type="number" [(ngModel)]="product.rating.count" class="edit-input" /></td>
+            </tr>
+          </table>
+        </ng-template>
+      </td>      
       <td>
         <div class="button-container">
-          <button class="action-button" (click)="openUpdateForm(product)">Update</button>
+          <button class="action-button" (click)="toggleEditMode(product)" [class.update-btn-disable]="isUpdateDisabled(product)">
+            <ng-container *ngIf="!product.isEditing; else saveBtn">
+              Update
+            </ng-container>
+            <ng-template #saveBtn>
+              Save
+            </ng-template>
+          </button>          
           <button class="action-button delete" (click)="deleteProduct(product)">Delete</button>
         </div>
-      </td>      
+      </td>
     </tr>
   </tbody>
 </table>
 
 <div class="pagination">
-    <button [disabled]="currentPage === 1" (click)="currentPage = 1" [class.disabled]="currentPage === 1">First</button>
-    <button [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1" [class.disabled]="currentPage === 1">Previous</button>
-    <span>{{ currentPage }}</span>
-    <button [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1" [class.disabled]="currentPage === totalPages">Next</button>
-    <button [disabled]="currentPage === totalPages" (click)="currentPage = totalPages" [class.disabled]="currentPage === totalPages">Last</button>
-  </div>
+  <button [disabled]="currentPage === 1" (click)="currentPage = 1" [class.disabled]="currentPage === 1">
+    First
+  </button>
+  <button
+    [disabled]="currentPage === 1"
+    (click)="currentPage = currentPage - 1"
+    [class.disabled]="currentPage === 1"
+  >
+    Previous
+  </button>
+  <span>{{ currentPage }}</span>
+  <button
+    [disabled]="currentPage === totalPages"
+    (click)="currentPage = currentPage + 1"
+    [class.disabled]="currentPage === totalPages"
+  >
+    Next
+  </button>
+  <button
+    [disabled]="currentPage === totalPages"
+    (click)="currentPage = totalPages"
+    [class.disabled]="currentPage === totalPages"
+  >
+    Last
+  </button>
+</div>

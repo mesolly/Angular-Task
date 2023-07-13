@@ -11,6 +11,7 @@ export class AddProductComponent implements OnInit {
   productForm: FormGroup;
   localUrl:any[] = [];
   selectedFileName: string ='';
+  categories:any[] = ["men's clothing","jewelery","electronics","electronics","others"] ;
 
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddProductComponent>,
